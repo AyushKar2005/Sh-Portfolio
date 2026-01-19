@@ -2,14 +2,14 @@
 "use client";
 
 import { useState } from "react";
-import Navbar from "@/components/Navbar";
-import Loader from "@/components/Loader";
-import Hero from "@/components/Hero";
-import About from "@/components/About";
-import Skills from "@/components/Skills";
-import Projects from "@/components/Projects";
-import Contact from "@/components/Contact";
-import ThemeCursor from "@/components/ThemeCursor";
+import Navbar from "../components/Navbar"
+import Loader from "../components/Loader";
+import Hero from "../components/Hero";
+import About from "../components/About";
+import Skills from "../components/Skills";
+import Projects from "../components/Projects";
+import Contact from "../components/Contact";
+import ThemeCursor from "../components/ThemeCursor";
 
 import { Instagram, Linkedin, Github, Mail } from "lucide-react";
 

@@ -1,7 +1,7 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
-import { AudioProvider } from "@/context/AudioProvider";
+import { AudioProvider } from "../context/AudioProvider";
 
 export const metadata: Metadata = {
   title: "Shruti.AI",

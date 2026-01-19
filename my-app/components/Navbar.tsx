@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
-import { useAudio } from "@/context/AudioProvider";
+import { useAudio } from "../context/AudioProvider";
 
 type SectionId = "about" | "skills" | "projects" | "contact";
 
