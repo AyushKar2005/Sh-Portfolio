@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glowing Particle Globe</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        overflow: hidden;
+        background: radial-gradient(circle at center, #0a0f1f, #000);
+      }
+
+      canvas {
+        display: block;
+      }
+
+      .overlay {
+        position: absolute;
+        top: 25px;
+        left: 25px;
+        color: white;
+        font-family: Arial, sans-serif;
+        opacity: 0.85;
+        z-index: 2;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="overlay">
+      <h2>Glowing Particle Globe</h2>
+      <p>Three.js animation</p>
+    </div>
+
+    <script type="module">
+      import * as THREE from "https://cdn.skypack.dev/three@0.152.2";
+
+      // Scene
+      const scene = new THREE.Scene();
+
+      // Camera
+      const camera = new THREE.PerspectiveCamera(
+        45,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        2000
+      );
+      camera.position.z = 4.5;
+
+      // Renderer
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      document.body.appendChild(renderer.domElement);
+
+      // ✅ Particle globe settings
+      const globeRadius = 1.5;
+      const particleCount = 6000;
+
+      const positions = new Float32Array(particleCount * 3);
+
+      // Generate sphere particles
+      for (let i = 0; i < particleCount; i++) {
+        const u = Math.random();
+        const v = Math.random();
+
+        const theta = 2 * Math.PI * u;
+        const phi = Math.acos(2 * v - 1);
+
+        const x = globeRadius * Math.sin(phi) * Math.cos(theta);
+        const y = globeRadius * Math.sin(phi) * Math.sin(theta);
+        const z = globeRadius * Math.cos(phi);
+
+        positions[i * 3] = x;
+        positions[i * 3 + 1] = y;
+        positions[i * 3 + 2] = z;
+      }
+
+      // Geometry
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
+      // ✅ Create a glowing particle texture (circle gradient)
+      const particleCanvas = document.createElement("canvas");
+      particleCanvas.width = 64;
+      particleCanvas.height = 64;
+
+      const ctx = particleCanvas.getContext("2d");
+      const centerX = 32;
+      const centerY = 32;
+      const gradient = ctx.createRadialGradient(centerX, centerY, 2, centerX, centerY, 32);
+
+      gradient.addColorStop(0, "rgba(0,255,255,1)");
+      gradient.addColorStop(0.4, "rgba(0,150,255,0.8)");
+      gradient.addColorStop(1, "rgba(0,0,0,0)");
+
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 32, 0, Math.PI * 2);
+      ctx.fill();
+
+      const particleTexture = new THREE.CanvasTexture(particleCanvas);
+
+      // Material
+      const material = new THREE.PointsMaterial({
+        size: 0.02,
+        map: particleTexture,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        color: new THREE.Color("#00ffff"),
+        opacity: 0.9,
+      });
+
+      // Points mesh
+      const globe = new THREE.Points(geometry, material);
+      scene.add(globe);
+
+      // ✅ Ambient + glow light feel
+      const light = new THREE.PointLight(0x00ffff, 1.5, 10);
+      light.position.set(4, 2, 5);
+      scene.add(light);
+
+      // Background tiny floating particles
+      const bgCount = 1200;
+      const bgPositions = new Float32Array(bgCount * 3);
+
+      for (let i = 0; i < bgCount; i++) {
+        bgPositions[i * 3] = (Math.random() - 0.5) * 20;
+        bgPositions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+        bgPositions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+      }
+
+      const bgGeometry = new THREE.BufferGeometry();
+      bgGeometry.setAttribute("position", new THREE.BufferAttribute(bgPositions, 3));
+
+      const bgMaterial = new THREE.PointsMaterial({
+        size: 0.015,
+        map: particleTexture,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        opacity: 0.5,
+        color: new THREE.Color("#00aaff"),
+      });
+
+      const bgStars = new THREE.Points(bgGeometry, bgMaterial);
+      scene.add(bgStars);
+
+      // Animation loop
+      function animate() {
+        requestAnimationFrame(animate);
+
+        // Globe rotation
+        globe.rotation.y += 0.0015;
+        globe.rotation.x += 0.0004;
+
+        // Background drift
+        bgStars.rotation.y += 0.0003;
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+
+      // Resize support
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    </script>
+  </body>
+</html>
