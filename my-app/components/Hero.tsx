@@ -6,7 +6,7 @@ export default function Hero() {
     <section className="relative mt-14 min-h-[420px] overflow-hidden rounded-3xl border border-white/10 bg-black px-6 py-16 md:px-12 md:py-20">
       {/* ✅ Pixel Portrait Background */}
       <div className="absolute inset-0 z-0 opacity-75">
-        <PixelPortraitBG imageSrc="/shruti.png" pixelGap={4} debug />
+        <PixelPortraitBG imageSrc="/shruti.png" pixelGap={4}  />
       </div>
 
       {/* ✅ Softer overlay */}
